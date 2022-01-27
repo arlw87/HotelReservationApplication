@@ -26,16 +26,13 @@ public class CustomerService {
     public void addCustomer(String email, String firstName, String lastName){
         try{
             if (getCustomer(email) != null){
-                throw new DuplicateFormatFlagsException("Customer email already used");
+                throw new IllegalArgumentException("Customer email already used");
             }
-            Customer c = new Customer(firstName, lastName, email)
+            Customer c = new Customer(firstName, lastName, email);
             customers.add(c);
             System.out.println("Customer " + c + " has been added");
-        } catch (IllegalArgumentException ex){
-            System.out.println("Customer has not been added due to an invalid email");
+        } catch (IllegalArgumentException ex) {
             System.out.println(ex.getLocalizedMessage());
-        } catch (DuplicateFormatFlagsException duplicate){
-            System.out.println(duplicate.getLocalizedMessage());
         }
     }
 
