@@ -8,13 +8,13 @@ public class Customer {
     private String lastName;
     private String email;
 
-    public Customer(String first, String last, String email) throws Exception{
+    public Customer(String first, String last, String email) throws IllegalArgumentException{
         try{
             setEmail(email);
             setFirstName(first);
             setLastName(last);
-        } catch (Exception ex){
-            throw ex;
+        } catch (IllegalArgumentException Illegal){
+            throw Illegal;
         }
     }
 
@@ -27,7 +27,7 @@ public class Customer {
     }
 
     //If email is incorrect throw an exception so object not created
-    public void setEmail(String email) throws Exception{
+    public void setEmail(String email) throws IllegalArgumentException{
         //do a regex check
         Pattern pattern = Pattern.compile("([A-Z]|[a-z]|[0-9])+@([A-Z]|[a-z]|[0-9])+\\.com");
         Matcher matcher = pattern.matcher(email.trim());
