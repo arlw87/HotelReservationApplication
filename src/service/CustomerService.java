@@ -16,24 +16,20 @@ public class CustomerService {
         System.out.println("The singleton has been created");
     }
 
-    public CustomerService getInstance(){
+    public static CustomerService getInstance(){
         if (singleton == null){
             singleton = new CustomerService();
         }
         return singleton;
     }
 
-    public void addCustomer(String email, String firstName, String lastName){
-        try{
-            if (getCustomer(email) != null){
-                throw new IllegalArgumentException("Customer email already used");
-            }
-            Customer c = new Customer(firstName, lastName, email);
-            customers.add(c);
-            System.out.println("Customer " + c + " has been added");
-        } catch (IllegalArgumentException ex) {
-            System.out.println(ex.getLocalizedMessage());
+    public void addCustomer(String email, String firstName, String lastName) throws IllegalArgumentException{
+        if (getCustomer(email) != null){
+            throw new IllegalArgumentException("Customer email already used");
         }
+        Customer c = new Customer(firstName, lastName, email);
+        customers.add(c);
+        System.out.println("Customer " + c + " has been added");
     }
 
     /**
