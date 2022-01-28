@@ -13,6 +13,9 @@ public class HotelResource {
     //Access to the CustomerService Singleton
     private CustomerService cs = null;
 
+    //Access to the ReservationService Singleton
+    private ReservationService rs = null;
+
     private HotelResource(){
         System.out.println("Singleton for the HotelResource has been created");
     }
@@ -20,8 +23,9 @@ public class HotelResource {
     public HotelResource getInstance(){
         if (singleton == null){
             singleton = new HotelResource();
-            //create the customer service singleton at the same time
+            //create the customer service  and Reservation service singleton at the same time
             cs = CustomerService.getInstance();
+            rs = ReservationService.getInstance();
         }
         return singleton;
     }
@@ -37,20 +41,43 @@ public class HotelResource {
         cs.addCustomer(email, firstName, lastName);
     }
 
+    /***
+     *
+     * @param roomNumber
+     * @return null if no room is found, The room object if found
+     */
     public IRoom getRoom(String roomNumber){
-        return null;
+        return rs.getARoom(roomNumber);
     }
 
-    public Reservation bookARoom(String customerEmail, IRoom room, Date CheckInDate, Date checkOutDate){
-        return null;
+
+    public Reservation bookARoom(String customerEmail, IRoom room, Date checkInDate, Date checkOutDate) throws IllegalArgumentException{
+        Customer bookingCustomer = cs.getCustomer(customerEmail);
+        if (bookingCustomer == null){
+            throw new IllegalArgumentException("Email address is not registered on the system");
+        }
+        return rs.reserveARoom(bookingCustomer, room, checkInDate, checkOutDate);
     }
 
-    public Collection<Reservation> getCustomerReservations(String customerEmail){
-        return null;
+    /**
+     * List of Entered Customers Reservations
+     * @param customerEmail
+     * @return Collection of reservation the customer has made, or null if no reservations are recorded for them
+     * @throws IllegalArgumentException if email address given is not registed with any of
+     * the customers on the system
+     */
+    public Collection<Reservation> getCustomerReservations(String customerEmail) throws IllegalArgumentException{
+        //first get the customer object then get their reservations
+        Customer currentCustomer = cs.getCustomer(customerEmail);
+        if (currentCustomer == null){
+            throw new IllegalArgumentException("Email address is not registered on the system");
+        }
+        //throw error if the customer is not registered
+        return rs.getCustomersReservation(currentCustomer);
     }
 
     public Collection<IRoom> findARoom(Date checkIn, Date checkOut){
-        return null;
+        return rs.findRooms(checkIn, checkOut);
     }
 
 
