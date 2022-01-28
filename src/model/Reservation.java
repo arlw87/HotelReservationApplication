@@ -1,5 +1,6 @@
 package model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Reservation {
@@ -49,13 +50,15 @@ public class Reservation {
         this.checkOut = checkOut;
     }
 
+    private String printDate(Date d){
+        String pattern = "yyyy-MM-dd";
+        SimpleDateFormat simple = new SimpleDateFormat(pattern);
+        return simple.format(d);
+    }
+
     @Override
     public String toString() {
-        return "Reservation{" +
-                "customer=" + customer +
-                ", room=" + room +
-                ", checkIn=" + checkIn +
-                ", checkOut=" + checkOut +
-                '}';
+        return "Customer " + customer.getFirstName() + " " + customer.getLastName() + " (" + customer.getEmail() + ")" +
+                " has reserved Room " + room.getRoomNumber() + " from " + printDate(checkIn) + " to " + printDate(checkOut);
     }
 }

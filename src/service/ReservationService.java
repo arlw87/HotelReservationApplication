@@ -15,7 +15,7 @@ public class ReservationService {
         System.out.println("A Singleton has been created for the Reservation service");
     };
 
-    public ReservationService getInstance(){
+    public static ReservationService getInstance(){
         if (singleton == null){
             singleton = new ReservationService();
         }
@@ -26,6 +26,24 @@ public class ReservationService {
         //using put will overwrite the value if the key already exist
         //this behaviour seems sensible as you may want to upper your room info
         rooms.put(room.getRoomNumber(), room);
+    }
+
+    /**
+     * For Testing purposes to add multiple rooms quickly
+     * @param rooms
+     */
+    public void addRooms(IRoom ...rooms){
+        for (IRoom r: rooms)
+        {
+            addRoom(r);
+        }
+    }
+
+    /**
+     * For Testing purposes
+     */
+    public Collection<IRoom> getAllRooms(){
+        return rooms.values();
     }
 
     /***
@@ -41,12 +59,22 @@ public class ReservationService {
         //iterate through all of the reservations and return a collection of
         //reservation made by that customer
 
-        return reservations;
+        Collection<Reservation> customersReservations = new ArrayList<>();
+
+        for (Reservation r: reservations){
+            if (r.getCustomer().getEmail().equalsIgnoreCase(customer.getEmail())){
+                customersReservations.add(r);
+            }
+        }
+
+        return customersReservations;
     }
 
     public Reservation reserveARoom(Customer customer, IRoom room, Date chekInDate, Date checkOutDate){
         //check for if the room is free on those dates should be done before
         Reservation r = new Reservation(customer, room, chekInDate, checkOutDate);
+        //Add to the reservation list
+        reservations.add(r);
         return r;
     }
 
@@ -63,11 +91,10 @@ public class ReservationService {
             INNER_LOOP: for (Reservation r: reservations){
                 //room in reservation same as the current room in room list
                 if (r.getRoom().getRoomNumber().equals(room.getRoomNumber())){
-                    //now check the dates
-                    if (true){
-                        //if the room is already booked for those dates then you
-                        //dont want to add the room to the available rooms
-                        //so move to the next room in the allRooms collection
+                    //Do the rate ranges overlap
+                    if (doDateRangesOverlap(checkInDate, checkOutDate, r.getCheckIn(), r.getCheckOut())){
+                        //if the reservation overlaps with requested dates
+                        //then dont add room to available rooms and goto next room in list
                         continue OUTER_LOOP;
                     }
                 }
@@ -76,8 +103,24 @@ public class ReservationService {
             availableRooms.add(room);
         }
 
-        return null;
+        return availableRooms;
     }
+
+    private boolean doDateRangesOverlap(Date rangeAStart, Date rangeAEnd, Date rangeBStart, Date rangeBEnd){
+        return (rangeAStart.getTime() <= rangeBEnd.getTime() && rangeAEnd.getTime() >= rangeBStart.getTime());
+    }
+
+    public Collection<Reservation> debugReturnReservations(){
+        return reservations;
+    }
+
+    public void printAllReservations(){
+        System.out.println("Here is a List of all of reservations");
+        for (Reservation r: reservations){
+            System.out.println(r);
+        }
+    }
+
 
 
 }
