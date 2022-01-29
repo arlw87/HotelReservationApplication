@@ -24,21 +24,24 @@ public class AdminResource {
     }
 
     public Customer getCustomer(String email){
-        return null;
+        return cs.getCustomer(email);
     }
 
     public void addRoom(List<IRoom> rooms){
-
+        for (IRoom r: rooms)
+        {
+            rs.addRoom(r);
+        }
     }
 
     public Collection<IRoom> getAllRooms(){
-        return null;
+        return rs.getAllRooms();
     }
 
     public Collection<Customer> getAllCustomers(){
-        return null;
+        return cs.getAllCustomers();
     }
     public void displayAllReservations(){
-
+        rs.printAllReservations();
     }
 }
