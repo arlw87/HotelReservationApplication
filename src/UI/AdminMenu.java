@@ -1,25 +1,43 @@
 package UI;
 
 import java.sql.SQLOutput;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
 
+import api.AdminResource;
+import api.HotelResource;
 import model.*;
 import service.*;
+
+/**
+ * Interface for the Administration menu. Prints and reads from the console. Uses Admin Resource and Hotel
+ * Resource class as the API to interface with the application
+ */
 
 public class AdminMenu {
 
     Scanner input = null;
     ReservationService rs = null;
-    CustomerService cs = null;
+    AdminResource ar = null;
+    HotelResource hr = null;
 
     public AdminMenu(Scanner passedScanner){
         input = passedScanner;
-        rs = ReservationService.getInstance();
-        cs = CustomerService.getInstance();
+        ar = AdminResource.getInstance();
+        hr = HotelResource.getInstance();
     }
 
+    /**
+     * Displays the Admin Menu in the console
+     * Takes the menu option the user gives and
+     * invokes the menuAction method to perform
+     * action based on the user input.
+     * If the user chooses to exit, isAdminOpen will become
+     * false and the menu will exit
+     */
     public void displayMenu(){
         boolean isAdminOpen = true;
         while (isAdminOpen){
@@ -29,6 +47,9 @@ public class AdminMenu {
         }
     }
 
+    /**
+     * Prints the Admin menu to the console
+     */
     private void printMenu(){
         System.out.println("\n--------------------------------------------");
         System.out.println("                Admin Menu                    ");
@@ -43,7 +64,11 @@ public class AdminMenu {
         System.out.println("Please select an option");
     }
 
-    //Duplication of code from the main menu class. May refactor into seperate helper class
+    /**
+     * Get the Option that the user selects from the Admin Menu. If an invalid input such as letters, symbols or
+     * a too high or too low number is entered the input will be requested again
+     * @return The option that the user selects as an int
+     */
     private int getOption(){
         boolean isValidSelection = false;
         int selectedOption = -1;
@@ -64,7 +89,7 @@ public class AdminMenu {
     }
 
     /**
-     *
+     * Executes appropriate method based on the user input from the Admin menu options
      * @param selection
      * @return True if Admin menu is to stay open after the menuAction has been performed
      * false if the Admin Menu is to close after the menuAction has been performed
@@ -95,12 +120,19 @@ public class AdminMenu {
         }
     }
 
-    //check that the room isnt already in the db and check the input is valid
+    /**
+     * Add a room or rooms to the Hotel Reservation System. Method will check that the input is valid and
+     * will check if that room number has been previously registered. After one room has been entered it
+     * will ask if another one is to an add. Once all rooms have been entered they are all add to the Hotel
+     * Reservation System at once.
+     */
     private void addARoom(){
 
         int roomNumber = -1;
         int roomSize = -1;
         double roomCost = -1;
+
+        List<IRoom> roomsToAdd = new ArrayList<>();
 
         boolean enteringRoomData = true;
 
@@ -112,7 +144,7 @@ public class AdminMenu {
                     roomNumber = Integer.parseInt(input.nextLine().trim());
 
                     //check if the room number has been entered before
-                    if (rs.getARoom(Integer.toString(roomNumber)) != null){
+                    if (hr.getRoom(Integer.toString(roomNumber)) != null){
                         throw new RuntimeException();
                     }
 
@@ -156,7 +188,9 @@ public class AdminMenu {
                 roomType = RoomType.DOUBLE;
             }
 
-            rs.addRoom(new Room(String.valueOf(roomNumber), roomCost, roomType));
+            //Add newly created room to list of rooms to be saved
+            roomsToAdd.add(new Room(String.valueOf(roomNumber), roomCost, roomType));
+
             //enter another room
             boolean enterAnotherRoom = true;
             while (enterAnotherRoom) {
@@ -176,27 +210,39 @@ public class AdminMenu {
                 }
             }
         }
+
+        //Add rooms to the system
+        ar.addRooms(roomsToAdd);
+
     }
 
     /**
-     * Prints all rooms
+     * Prints all rooms on the Hotel Reservation System
      */
     private void displayAllRooms(){
         System.out.println("All Rooms");
         System.out.println("--------------------------------------------");
-        rs.printAllRooms();
+        for (IRoom room: ar.getAllRooms()){
+            System.out.println(room);
+        }
     }
 
+    /**
+     * Prints all the customers of the Hotel Reservation System
+     */
     private void printCustomers(){
         System.out.println("All Customers");
-        for (Customer c: cs.getAllCustomers()){
+        for (Customer c: ar.getAllCustomers()){
             System.out.println(c);
         }
     }
 
+    /**
+     * Prints all the reservations recorded on the Hotel Reservation System
+     */
     private void seeAllReservations(){
         System.out.println("All reservations are displayed below");
-        rs.printAllReservations();
+        ar.displayAllReservations();
     }
 
 }

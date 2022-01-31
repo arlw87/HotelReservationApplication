@@ -3,6 +3,10 @@ import model.*;
 import service.*;
 import java.util.*;
 
+/**
+ * Provides an API for the admin functions of the Hotel Reservation system, between the UI (Admin menu) and the
+ * Service classes
+ */
 public class AdminResource {
 
     private static AdminResource singleton = null;
@@ -27,7 +31,7 @@ public class AdminResource {
         return cs.getCustomer(email);
     }
 
-    public void addRoom(List<IRoom> rooms){
+    public void addRooms(List<IRoom> rooms){
         for (IRoom r: rooms)
         {
             rs.addRoom(r);

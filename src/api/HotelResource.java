@@ -8,19 +8,19 @@ import java.util.*;
 public class HotelResource {
 
     //this is going to a singleton aswell
-    HotelResource singleton = null;
+    private static HotelResource singleton = null;
 
     //Access to the CustomerService Singleton
-    private CustomerService cs = null;
+    private static CustomerService cs = null;
 
     //Access to the ReservationService Singleton
-    private ReservationService rs = null;
+    private static ReservationService rs = null;
 
     private HotelResource(){
         System.out.println("Singleton for the HotelResource has been created");
     }
 
-    public HotelResource getInstance(){
+    public static HotelResource getInstance(){
         if (singleton == null){
             singleton = new HotelResource();
             //create the customer service  and Reservation service singleton at the same time
