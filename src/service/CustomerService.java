@@ -25,7 +25,7 @@ public class CustomerService {
 
     public void addCustomer(String email, String firstName, String lastName) throws IllegalArgumentException{
         if (getCustomer(email) != null){
-            throw new IllegalArgumentException("Customer email already used");
+            throw new IllegalArgumentException("Customer email already in use");
         }
         Customer c = new Customer(firstName, lastName, email);
         customers.add(c);

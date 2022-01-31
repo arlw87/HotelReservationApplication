@@ -31,7 +31,6 @@ public class Customer {
         //do a regex check
         Pattern pattern = Pattern.compile("([A-Z]|[a-z]|[0-9])+@([A-Z]|[a-z]|[0-9])+\\.com");
         Matcher matcher = pattern.matcher(email.trim());
-        System.out.println("The email provide is correct: " + matcher.matches());
         if (!matcher.matches()){
             throw new IllegalArgumentException("Email invalid");
         }

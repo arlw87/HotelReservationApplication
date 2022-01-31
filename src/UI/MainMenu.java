@@ -1,14 +1,20 @@
 package UI;
 
+import service.CustomerService;
+
 import java.sql.SQLOutput;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class MainMenu {
 
-    Scanner input = new Scanner(System.in);
+    private Scanner input = null;
+    private CustomerService cs = null;
 
-    public MainMenu(){}
+    public MainMenu(){
+        cs = CustomerService.getInstance();
+        input = new Scanner(System.in);
+    }
 
     public static void main(String[] args) {
         boolean exit = false;
@@ -63,6 +69,7 @@ public class MainMenu {
                 return false;
             case 3:
                 System.out.println("Creating an account");
+                createAnAccount();
                 return false;
             case 4:
                 System.out.println("Administration Menu");
@@ -81,6 +88,32 @@ public class MainMenu {
     private void openAdminMenu(){
         AdminMenu am = new AdminMenu(input);
         am.displayMenu();
+    }
+
+    //This method will validate the email but not the names
+    private void createAnAccount(){
+        //get customer information
+        boolean isEnteringCustomerInfo = true;
+
+        while ( isEnteringCustomerInfo ){
+            System.out.println("Please enter in your email (Format name@domain.com)");
+            String email = input.nextLine().trim();
+            System.out.println("First Name");
+            String firstName = input.nextLine().trim();
+            System.out.println("Last Name");
+            String lastName = input.nextLine().trim();
+
+            try{
+                cs.addCustomer(email, firstName, lastName);
+                isEnteringCustomerInfo = false;
+            } catch (IllegalArgumentException ex){
+                System.out.println(ex.getLocalizedMessage());
+                System.out.println("Please enter your information again");
+            }
+        }
+
+        System.out.println("Welcome to the Hotel\n");
+
     }
 
 
