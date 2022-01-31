@@ -75,11 +75,10 @@ public class AdminMenu {
                 printCustomers();
                 return true;
             case 2:
-                System.out.println("See All Rooms");
                 displayAllRooms();
                 return true;
             case 3:
-                System.out.println("See All Reservations");
+                seeAllReservations();
                 return true;
             case 4:
                 addARoom();
@@ -195,5 +194,9 @@ public class AdminMenu {
         }
     }
 
+    private void seeAllReservations(){
+        System.out.println("All reservations are displayed below");
+        rs.printAllReservations();
+    }
 
 }

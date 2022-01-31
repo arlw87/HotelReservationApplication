@@ -155,8 +155,8 @@ public class MainMenu {
                     "specified start and end days...");
             //create a new search for rooms
             //Add to Date
-            Date checkInPlus7 = incrementDateBy7Days(checkIn);
-            Date checkOutPlus7 = incrementDateBy7Days(checkOut);
+            checkIn = incrementDateBy7Days(checkIn);
+            checkOut = incrementDateBy7Days(checkOut);
             availableRooms = rs.findRooms(checkIn, checkOut);
 
             if (availableRooms.size() == 0){
