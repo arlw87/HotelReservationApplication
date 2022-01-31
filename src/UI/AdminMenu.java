@@ -20,7 +20,6 @@ import service.*;
 public class AdminMenu {
 
     Scanner input = null;
-    ReservationService rs = null;
     AdminResource ar = null;
     HotelResource hr = null;
 
@@ -146,6 +145,10 @@ public class AdminMenu {
                     //check if the room number has been entered before
                     if (hr.getRoom(Integer.toString(roomNumber)) != null){
                         throw new RuntimeException();
+                    }
+
+                    if(roomNumber < 1){
+                        throw new IllegalArgumentException("Room number must be 1 or more");
                     }
 
                     isRoomNumberEntered = true;

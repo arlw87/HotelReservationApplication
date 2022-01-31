@@ -155,7 +155,7 @@ public class MainMenu {
             String checkOutString = input.nextLine().trim();
 
             //parse the Dates
-            SimpleDateFormat formatter = new SimpleDateFormat("mm/dd/yyyy");
+            SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 
             //Validates the entered dates. Are they both in the future, is the check out date after the
             //check in date, if these are not true, ask for inputs again
@@ -236,7 +236,7 @@ public class MainMenu {
                     //go to create an account
                     createAnAccount();
                     haveAccountLoop = false;
-                    System.out.println("Please continue with reservation and enter you email address you just" +
+                    System.out.println("Please continue with reservation and enter you email address you just " +
                             "registered");
                 } else if (haveAccount.equals("y") || haveAccount.equals("yes")){
                     haveAccountLoop = false;
