@@ -2,12 +2,16 @@ package api;
 
 import model.*;
 import service.*;
-
 import java.util.*;
 
+
+
+/**
+ * Provides an API between the UI (Main menu) and the service classes. HotelResource uses the singleton pattern so that
+ * only one instance of it, is accessible to the program
+ */
 public class HotelResource {
 
-    //this is going to a singleton aswell
     private static HotelResource singleton = null;
 
     //Access to the CustomerService Singleton
@@ -23,13 +27,17 @@ public class HotelResource {
     public static HotelResource getInstance(){
         if (singleton == null){
             singleton = new HotelResource();
-            //create the customer service  and Reservation service singleton at the same time
             cs = CustomerService.getInstance();
             rs = ReservationService.getInstance();
         }
         return singleton;
     }
 
+    /**
+     * get Customer Object passed to on email passed
+     * @param email
+     * @return Customer object
+     */
     public Customer getCustomer(String email){
         //getCustomer in CustomerService Class ignores case
         return cs.getCustomer(email);
@@ -49,7 +57,7 @@ public class HotelResource {
     }
 
     /***
-     *
+     * Get a Room object of the room number provided
      * @param roomNumber
      * @return null if no room is found, The room object if found
      */
@@ -57,7 +65,15 @@ public class HotelResource {
         return rs.getARoom(roomNumber);
     }
 
-
+    /**
+     * Reserve a room
+     * @param customerEmail
+     * @param room
+     * @param checkInDate
+     * @param checkOutDate
+     * @return
+     * @throws IllegalArgumentException if the customer email address is not registered
+     */
     public Reservation bookARoom(String customerEmail, IRoom room, Date checkInDate, Date checkOutDate) throws IllegalArgumentException{
         Customer bookingCustomer = cs.getCustomer(customerEmail);
         if (bookingCustomer == null){
@@ -83,6 +99,12 @@ public class HotelResource {
         return rs.getCustomersReservation(currentCustomer);
     }
 
+    /**
+     * Return a list of available rooms based on the dates entered
+     * @param checkIn
+     * @param checkOut
+     * @return
+     */
     public Collection<IRoom> findARoom(Date checkIn, Date checkOut){
         return rs.findRooms(checkIn, checkOut);
     }
