@@ -115,8 +115,13 @@ public class ReservationService {
     }
 
     public void printAllReservations(){
-        System.out.println("Here is a List of all of reservations");
         for (Reservation r: reservations){
+            System.out.println(r);
+        }
+    }
+
+    public void printAllRooms(){
+        for (IRoom r: getAllRooms()){
             System.out.println(r);
         }
     }

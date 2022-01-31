@@ -11,9 +11,11 @@ import service.*;
 public class AdminMenu {
 
     Scanner input = null;
+    ReservationService rs = null;
 
     public AdminMenu(Scanner passedScanner){
         input = passedScanner;
+        rs = ReservationService.getInstance();
     }
 
     public void displayMenu(){
@@ -72,12 +74,12 @@ public class AdminMenu {
                 return true;
             case 2:
                 System.out.println("See All Rooms");
+                displayAllRooms();
                 return true;
             case 3:
                 System.out.println("See All Reservations");
                 return true;
             case 4:
-                System.out.println("Add a Room");
                 addARoom();
                 return true;
             case 5:
@@ -98,7 +100,6 @@ public class AdminMenu {
         int roomNumber = -1;
         int roomSize = -1;
         double roomCost = -1;
-        ReservationService rs = ReservationService.getInstance();
 
         boolean enteringRoomData = true;
 
@@ -173,9 +174,16 @@ public class AdminMenu {
                     System.out.println("Invalid choice please try again");
                 }
             }
-
         }
+    }
 
+    /**
+     * Prints all rooms
+     */
+    private void displayAllRooms(){
+        System.out.println("All Rooms");
+        System.out.println("--------------------------------------------");
+        rs.printAllRooms();
     }
 
 
