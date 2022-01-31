@@ -1,18 +1,24 @@
 package UI;
 
 import service.CustomerService;
+import service.ReservationService;
 
 import java.sql.SQLOutput;
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import model.*;
 
 public class MainMenu {
 
     private Scanner input = null;
     private CustomerService cs = null;
+    private ReservationService rs = null;
 
     public MainMenu(){
         cs = CustomerService.getInstance();
+        rs = ReservationService.getInstance();
         input = new Scanner(System.in);
     }
 
@@ -62,17 +68,15 @@ public class MainMenu {
     private boolean menuAction(int selection){
         switch(selection){
             case 1:
-                System.out.println("Finding and reserving a room");
+                reservingARoom();
                 return false;
             case 2:
-                System.out.println("See all my reservations");
+                viewCustomerReservations();
                 return false;
             case 3:
-                System.out.println("Creating an account");
                 createAnAccount();
                 return false;
             case 4:
-                System.out.println("Administration Menu");
                 openAdminMenu();
                 return false;
             case 5:
@@ -116,5 +120,205 @@ public class MainMenu {
 
     }
 
+    private void reservingARoom() {
 
+        boolean enteringDates = true;
+        Date checkIn = null;
+        Date checkOut = null;
+
+        while (enteringDates){
+            System.out.println("Enter Check in date (mm/dd/yyyy)");
+            String checkInString = input.nextLine().trim();
+            System.out.println("Enter Check out date (mm/dd/yyyy)");
+            String checkOutString = input.nextLine().trim();
+
+            //parse the Dates
+            SimpleDateFormat formatter = new SimpleDateFormat("mm/dd/yyyy");
+
+            try {
+                checkIn = formatter.parse(checkInString);
+                checkOut = formatter.parse(checkOutString);
+                enteringDates = false;
+            } catch (ParseException ex) {
+                System.out.println("Error with date inputs");
+                System.out.println("Please try again");
+            }
+        }
+
+        //find rooms
+        Collection<IRoom> availableRooms = rs.findRooms(checkIn, checkOut);
+
+        //if there are no rooms available then add 7 days to both the checkIn and checkOut
+        //dates and search again
+        if (availableRooms.size() == 0){
+            System.out.println("No rooms found for the date specified looking for rooms available 7 days after your" +
+                    "specified start and end days...");
+            //create a new search for rooms
+            //Add to Date
+            Date checkInPlus7 = incrementDateBy7Days(checkIn);
+            Date checkOutPlus7 = incrementDateBy7Days(checkOut);
+            availableRooms = rs.findRooms(checkIn, checkOut);
+
+            if (availableRooms.size() == 0){
+                System.out.println("Sorry there are no rooms available 7 days after your specified dates either");
+                return;
+            }
+        }
+
+        //print the rooms
+        System.out.println("Here are the available rooms");
+        for (IRoom room : availableRooms){
+            System.out.println(room);
+        }
+
+        System.out.println("Would you like to book a room? (y/n)");
+        boolean choosingLikeToBookRoom = true;
+        while( choosingLikeToBookRoom ){
+
+            try {
+                String likeToBook = input.nextLine().toLowerCase(Locale.ROOT).trim();
+                if (likeToBook.equals("n") || likeToBook.equals("no")){
+                    return; //exit this menu option
+                } else if (likeToBook.equals("y") || likeToBook.equals("yes")){
+                    choosingLikeToBookRoom = false;
+                } else {
+                    throw new IllegalArgumentException("Invalid input");
+                }
+            } catch (IllegalArgumentException ex) {
+                System.out.println("Invalid choice please try again");
+            }
+        }
+
+        System.out.println("Do you have an account with us? (y/n)");
+        boolean haveAccountLoop = true;
+        while( haveAccountLoop ){
+
+            try {
+                String haveAccount = input.nextLine().toLowerCase(Locale.ROOT).trim();
+                if (haveAccount.equals("n") || haveAccount.equals("no")){
+                    //go to create an account
+                    createAnAccount();
+                    haveAccountLoop = false;
+                    System.out.println("Please continue with reservation and enter you email address you just" +
+                            "registered");
+                } else if (haveAccount.equals("y") || haveAccount.equals("yes")){
+                    haveAccountLoop = false;
+                } else {
+                    throw new IllegalArgumentException("Invalid input");
+                }
+            } catch (IllegalArgumentException ex) {
+                System.out.println("Invalid choice please try again");
+            }
+        }
+
+        //Now type in the account
+        System.out.println("Enter email address of account (name@domain.com)");
+        boolean enteringCustomerEmail = true;
+        Customer reservationCustomer = null;
+        while ( enteringCustomerEmail ) {
+            try{
+                String customerEmail = input.nextLine().toLowerCase(Locale.ROOT).trim();
+                reservationCustomer = cs.getCustomer(customerEmail);
+                if (reservationCustomer == null){
+                    throw new IllegalArgumentException("That customer email address is not in our records");
+                }
+                enteringCustomerEmail = false;
+            } catch (IllegalArgumentException ex) {
+                System.out.println(ex.getLocalizedMessage());
+                System.out.println("Please try again");
+            }
+        }
+
+        //Select room
+
+        boolean roomNumberSelectionLoop = true;
+        boolean isRoomAvailable = false;
+        int roomNumberSelected = -1;
+        IRoom reservedRoom = null;
+        while ( roomNumberSelectionLoop ) {
+            try{
+                System.out.println("Please select room number");
+                roomNumberSelected = Integer.parseInt(input.nextLine().trim());
+                //check if the room number is in the available options
+                for (IRoom room : availableRooms) {
+                    if (Integer.parseInt(room.getRoomNumber()) == roomNumberSelected) {
+                        isRoomAvailable = true;
+                        roomNumberSelectionLoop = false;
+                        reservedRoom = room;
+                        break;
+                    }
+                }
+
+                //if room isnt available then try again
+                throw new RuntimeException("Room is not available");
+
+            } catch (IllegalArgumentException ex){
+                System.out.println("Please enter a valid room number");
+                System.out.println("Please make a selection from these rooms");
+                for (IRoom room : availableRooms){
+                    System.out.println(room);
+                }
+            } catch (RuntimeException re){
+                System.out.println(re.getLocalizedMessage());
+                System.out.println("Please make a selection from these rooms");
+                for (IRoom room : availableRooms){
+                    System.out.println(room);
+                }
+            }
+        }
+
+        //create a reservation
+        Reservation r = rs.reserveARoom(reservationCustomer, reservedRoom, checkIn, checkOut);
+
+        System.out.println("");
+        System.out.println("Thank you for your reservation");
+        //print Reservation
+        System.out.println(r);
+    }
+
+    private void viewCustomerReservations(){
+        //Now type in the account
+        System.out.println("Type in your email address to see your reservations");
+        System.out.println("If you wish to exit this option type EXIT");
+        System.out.println("Enter email address of account (name@domain.com)");
+        boolean enteringCustomerEmail = true;
+        Customer reservationCustomer = null;
+        while ( enteringCustomerEmail ) {
+            try{
+                String customerEmail = input.nextLine().toLowerCase(Locale.ROOT).trim();
+                //if the customer decides they dont want to type in address or they are not
+                //registered then there is an option to exit the menu option
+                if (customerEmail.toUpperCase(Locale.ROOT).equals("EXIT")){
+                    return;
+                }
+                reservationCustomer = cs.getCustomer(customerEmail);
+                if (reservationCustomer == null){
+                    throw new IllegalArgumentException("That customer email address is not in our records");
+                }
+                //get the customer Reservations
+                Collection<Reservation> customerReservations = rs.getCustomersReservation(reservationCustomer);
+                //now print the reservations
+                if (customerReservations.size() == 0){
+                    System.out.println("There are no reservations for this customer");
+                } else {
+                    for (Reservation res : customerReservations){
+                        System.out.println(res);
+                    }
+                    System.out.println("");
+                }
+
+                enteringCustomerEmail = false;
+            } catch (IllegalArgumentException ex) {
+                System.out.println(ex.getLocalizedMessage());
+                System.out.println("Please try again");
+            }
+        }
+    };
+
+    private static Date incrementDateBy7Days(Date dateToIncrement){
+        Calendar date = Calendar.getInstance();
+        date.setTime(dateToIncrement);
+        date.add(Calendar.DATE, 7);
+        return date.getTime();
+    }
 }

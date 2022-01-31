@@ -170,7 +170,7 @@ public class AdminMenu {
                     } else if (enteredResponse.equals("y") || enteredResponse.equals("yes")){
                         enterAnotherRoom = false;
                     } else {
-                        throw new IllegalArgumentException("Invlad input");
+                        throw new IllegalArgumentException("Invalid input");
                     }
                 } catch (IllegalArgumentException ex) {
                     System.out.println("Invalid choice please try again");
