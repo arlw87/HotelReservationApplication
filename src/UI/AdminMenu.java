@@ -1,7 +1,12 @@
 package UI;
 
 import java.sql.SQLOutput;
+import java.util.Locale;
 import java.util.Scanner;
+
+
+import model.*;
+import service.*;
 
 public class AdminMenu {
 
@@ -73,6 +78,7 @@ public class AdminMenu {
                 return true;
             case 4:
                 System.out.println("Add a Room");
+                addARoom();
                 return true;
             case 5:
                 System.out.println("Add Test Data");
@@ -84,6 +90,92 @@ public class AdminMenu {
                 System.out.println("Default Option");
                 return false;
         }
+    }
+
+    //check that the room isnt already in the db and check the input is valid
+    private void addARoom(){
+
+        int roomNumber = -1;
+        int roomSize = -1;
+        double roomCost = -1;
+        ReservationService rs = ReservationService.getInstance();
+
+        boolean enteringRoomData = true;
+
+        while (enteringRoomData){
+            boolean isRoomNumberEntered = false;
+            while (!isRoomNumberEntered){
+                try{
+                    System.out.println("Enter room number");
+                    roomNumber = Integer.parseInt(input.nextLine().trim());
+
+                    //check if the room number has been entered before
+                    if (rs.getARoom(Integer.toString(roomNumber)) != null){
+                        throw new RuntimeException();
+                    }
+
+                    isRoomNumberEntered = true;
+                } catch (IllegalArgumentException ex){
+                    System.out.println("Please enter a valid room number");
+                } catch (RuntimeException re){
+                    System.out.println("Room already exists please add another");
+                }
+            }
+
+            boolean isRoomCostEntered = false;
+            while (!isRoomCostEntered){
+                try{
+                    System.out.println("Enter room cost per night");
+                    roomCost = Double.parseDouble(input.nextLine().trim());
+                    isRoomCostEntered = true;
+                } catch (IllegalArgumentException ex){
+                    System.out.println("Please enter a valid room cost");
+                }
+            }
+
+            boolean isRoomSizeEntered = false;
+            while (!isRoomSizeEntered){
+                try{
+                    System.out.println("Enter room type: 1 for single bed, 2 for double bed");
+                    roomSize = Integer.parseInt(input.nextLine().trim());
+                    if (roomSize > 2 || roomSize < 1){
+                        throw new IllegalArgumentException("Wrong room size");
+                    }
+                    isRoomSizeEntered = true;
+                } catch (IllegalArgumentException ex){
+                    System.out.println("Please enter a valid room size");
+                }
+            }
+
+            RoomType roomType = null;
+            if (roomSize == 1){
+                roomType = RoomType.SINGLE;
+            } else {
+                roomType = RoomType.DOUBLE;
+            }
+
+            rs.addRoom(new Room(String.valueOf(roomNumber), roomCost, roomType));
+            //enter another room
+            boolean enterAnotherRoom = true;
+            while (enterAnotherRoom) {
+                try {
+                    System.out.println("Do you want to enter data for another room (Y/Yes or N/No): ");
+                    String enteredResponse = input.nextLine().trim().toLowerCase(Locale.ROOT);
+                    if (enteredResponse.equals("n") || enteredResponse.equals("no")){
+                        enteringRoomData = false;
+                        enterAnotherRoom = false;
+                    } else if (enteredResponse.equals("y") || enteredResponse.equals("yes")){
+                        enterAnotherRoom = false;
+                    } else {
+                        throw new IllegalArgumentException("Invlad input");
+                    }
+                } catch (IllegalArgumentException ex) {
+                    System.out.println("Invalid choice please try again");
+                }
+            }
+
+        }
+
     }
 
 
