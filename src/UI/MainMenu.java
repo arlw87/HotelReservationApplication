@@ -26,6 +26,8 @@ public class MainMenu {
         System.out.println("3 - Create an Account");
         System.out.println("4 - Admin");
         System.out.println("5 - Exit");
+        System.out.println("--------------------------------------------");
+        System.out.println("Please select an option");
     }
 
     private int getOption(){
@@ -60,6 +62,7 @@ public class MainMenu {
                 break;
             case 4:
                 System.out.println("Administration Menu");
+                openAdminMenu();
                 break;
             case 5:
                 System.out.println("Exit the program");
@@ -68,5 +71,10 @@ public class MainMenu {
     }
 
     //methods for all these actions
+    private void openAdminMenu(){
+        AdminMenu am = new AdminMenu(input);
+        am.displayMenu();
+    }
+
 
 }
