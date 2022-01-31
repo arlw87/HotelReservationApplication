@@ -26,9 +26,12 @@ public class Customer {
         lastName = name;
     }
 
-    //If email is incorrect throw an exception so object not created
+    /***
+     * Sets customer email. Validates the email using Regex.
+     * @param email
+     * @throws IllegalArgumentException if the email does follow the name@domain.com format
+     */
     public void setEmail(String email) throws IllegalArgumentException{
-        //do a regex check
         Pattern pattern = Pattern.compile("([A-Z]|[a-z]|[0-9])+@([A-Z]|[a-z]|[0-9])+\\.com");
         Matcher matcher = pattern.matcher(email.trim());
         if (!matcher.matches()){

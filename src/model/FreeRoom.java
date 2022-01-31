@@ -1,5 +1,8 @@
 package model;
 
+/**
+ * FreeRom is an extension of Room Class but the price is nothing
+ */
 public class FreeRoom extends Room{
 
     public FreeRoom(String roomNumber, RoomType roomType){
