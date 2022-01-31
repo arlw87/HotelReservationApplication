@@ -12,10 +12,12 @@ public class AdminMenu {
 
     Scanner input = null;
     ReservationService rs = null;
+    CustomerService cs = null;
 
     public AdminMenu(Scanner passedScanner){
         input = passedScanner;
         rs = ReservationService.getInstance();
+        cs = CustomerService.getInstance();
     }
 
     public void displayMenu(){
@@ -70,7 +72,7 @@ public class AdminMenu {
     private boolean menuAction(int selection){
         switch(selection){
             case 1:
-                System.out.println("See All Customers");
+                printCustomers();
                 return true;
             case 2:
                 System.out.println("See All Rooms");
@@ -184,6 +186,13 @@ public class AdminMenu {
         System.out.println("All Rooms");
         System.out.println("--------------------------------------------");
         rs.printAllRooms();
+    }
+
+    private void printCustomers(){
+        System.out.println("All Customers");
+        for (Customer c: cs.getAllCustomers()){
+            System.out.println(c);
+        }
     }
 
 
