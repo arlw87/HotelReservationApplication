@@ -24,17 +24,10 @@ public class MainMenu {
     }
 
     public static void main(String[] args) {
-        boolean exit = false;
-        MainMenu m = new MainMenu();
-        while (!exit){
-            m.printMenu();
-            int selectedOption = m.getOption();
-            exit = m.menuAction(selectedOption);
-        }
 
     }
 
-    private void printMenu(){
+    public void printMenu(){
         System.out.println("\n--------------------------------------------");
         System.out.println("Welcome to the Hotel Reservation Apllication");
         System.out.println("--------------------------------------------\n");
@@ -47,7 +40,7 @@ public class MainMenu {
         System.out.println("Please select an option");
     }
 
-    private int getOption(){
+    public int getOption(){
         boolean isValidSelection = false;
         int selectedOption = -1;
 
@@ -66,7 +59,7 @@ public class MainMenu {
         return selectedOption;
     }
 
-    private boolean menuAction(int selection){
+    public boolean menuAction(int selection){
         switch(selection){
             case 1:
                 reservingARoom();
@@ -81,7 +74,7 @@ public class MainMenu {
                 openAdminMenu();
                 return false;
             case 5:
-                System.out.println("Exit the program");
+                System.out.println("Thank you for using the Hotel Reservation Service - Good bye");
                 return true;
             default:
                 System.out.println("Default Option");
