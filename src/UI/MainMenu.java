@@ -1,9 +1,7 @@
 package UI;
 
-import service.CustomerService;
-import service.ReservationService;
-
-import java.sql.SQLOutput;
+import api.AdminResource;
+import api.HotelResource;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,22 +9,30 @@ import java.util.*;
 
 import model.*;
 
+/**
+ * Main Menu of the Application. Provides the UI on the console for the user
+ * to interact with. Uses the AdminResource and HotelResource class's as the API
+ * to interact with the application
+ */
 public class MainMenu {
 
     private Scanner input = null;
-    private CustomerService cs = null;
-    private ReservationService rs = null;
+
+    private AdminResource ar = null;
+    private HotelResource hr = null;
+
 
     public MainMenu(){
-        cs = CustomerService.getInstance();
-        rs = ReservationService.getInstance();
+        hr = HotelResource.getInstance();
+        ar = AdminResource.getInstance();
         input = new Scanner(System.in);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) {}
 
-    }
-
+    /**
+     * Prints the main menu to the console
+     */
     public void printMenu(){
         System.out.println("\n--------------------------------------------");
         System.out.println("Welcome to the Hotel Reservation Apllication");
@@ -40,6 +46,11 @@ public class MainMenu {
         System.out.println("Please select an option");
     }
 
+    /**
+     * Get the Option that the user selects from the Admin Menu. If an invalid input such as letters, symbols or
+     * a too high or too low number is entered the input will be requested again
+     * @return The option that the user selects as an int
+     */
     public int getOption(){
         boolean isValidSelection = false;
         int selectedOption = -1;
@@ -59,6 +70,13 @@ public class MainMenu {
         return selectedOption;
     }
 
+    /**
+     * Takes the user input menu selection and runs the appropriate method to perform
+     * the users desired action
+     * @param selection
+     * @return false, if the Main menu is to stay open after the action is performed
+     * true if it is to close after the action is performed (Exit menu)
+     */
     public boolean menuAction(int selection){
         switch(selection){
             case 1:
@@ -82,13 +100,18 @@ public class MainMenu {
         }
     }
 
-    //methods for all these actions
+    /**
+     * Opens the Admin menu
+     */
     private void openAdminMenu(){
         AdminMenu am = new AdminMenu(input);
         am.displayMenu();
     }
 
-    //This method will validate the email but not the names
+    /**
+     * Creates a customer account on the Hotel Reservation System. Validates the email entered
+     * and checks to see if the customer email has been used previously.
+     */
     private void createAnAccount(){
         //get customer information
         boolean isEnteringCustomerInfo = true;
@@ -102,7 +125,7 @@ public class MainMenu {
             String lastName = input.nextLine().trim();
 
             try{
-                cs.addCustomer(email, firstName, lastName);
+                hr.createACustomer(email, firstName, lastName);
                 isEnteringCustomerInfo = false;
             } catch (IllegalArgumentException ex){
                 System.out.println(ex.getLocalizedMessage());
@@ -114,12 +137,17 @@ public class MainMenu {
 
     }
 
+    /**
+     * Reserve a room in the Hotel Reservation System. If no rooms available for the supplied dates then the
+     * method will check if any rooms are available a week later, if they are not then the method will exit.
+     */
     private void reservingARoom() {
 
         boolean enteringDates = true;
         Date checkIn = null;
         Date checkOut = null;
 
+        //loop for entering dates, will loop until the entered dates are valid
         while (enteringDates){
             System.out.println("Enter Check in date (mm/dd/yyyy)");
             String checkInString = input.nextLine().trim();
@@ -129,6 +157,8 @@ public class MainMenu {
             //parse the Dates
             SimpleDateFormat formatter = new SimpleDateFormat("mm/dd/yyyy");
 
+            //Validates the entered dates. Are they both in the future, is the check out date after the
+            //check in date, if these are not true, ask for inputs again
             try {
                 checkIn = formatter.parse(checkInString);
                 checkOut = formatter.parse(checkOutString);
@@ -145,8 +175,8 @@ public class MainMenu {
             }
         }
 
-        //find rooms
-        Collection<IRoom> availableRooms = rs.findRooms(checkIn, checkOut);
+        //find rooms for these entered dates
+        Collection<IRoom> availableRooms = hr.findARoom(checkIn, checkOut);
 
         //if there are no rooms available then add 7 days to both the checkIn and checkOut
         //dates and search again
@@ -157,7 +187,7 @@ public class MainMenu {
             //Add to Date
             checkIn = incrementDateBy7Days(checkIn);
             checkOut = incrementDateBy7Days(checkOut);
-            availableRooms = rs.findRooms(checkIn, checkOut);
+            availableRooms = hr.findARoom(checkIn, checkOut);
 
             if (availableRooms.size() == 0){
                 System.out.println("Sorry there are no rooms available 7 days after your specified dates either");
@@ -174,6 +204,9 @@ public class MainMenu {
 
         System.out.println("Would you like to book a room? (y/n)");
         boolean choosingLikeToBookRoom = true;
+
+        //Choice to book a room loop, will loop until a validate input entered
+        //to book a room. Any form of n, y, yes or no are valid
         while( choosingLikeToBookRoom ){
 
             try {
@@ -192,6 +225,9 @@ public class MainMenu {
 
         System.out.println("Do you have an account with us? (y/n)");
         boolean haveAccountLoop = true;
+
+        //Check if the customer has account or not loop
+        //will loop until they give a valid input
         while( haveAccountLoop ){
 
             try {
@@ -212,14 +248,15 @@ public class MainMenu {
             }
         }
 
-        //Now type in the account
+        //Now type in the email address to reserve room
         System.out.println("Enter email address of account (name@domain.com)");
         boolean enteringCustomerEmail = true;
         Customer reservationCustomer = null;
+        //loop until the customer email is valid
         while ( enteringCustomerEmail ) {
             try{
                 String customerEmail = input.nextLine().toLowerCase(Locale.ROOT).trim();
-                reservationCustomer = cs.getCustomer(customerEmail);
+                reservationCustomer = hr.getCustomer(customerEmail);
                 if (reservationCustomer == null){
                     throw new IllegalArgumentException("That customer email address is not in our records");
                 }
@@ -236,6 +273,7 @@ public class MainMenu {
         boolean isRoomAvailable = false;
         int roomNumberSelected = -1;
         IRoom reservedRoom = null;
+        //Select a room loop
         while ( roomNumberSelectionLoop ) {
             try{
                 System.out.println("Please select room number");
@@ -269,7 +307,7 @@ public class MainMenu {
         }
 
         //create a reservation
-        Reservation r = rs.reserveARoom(reservationCustomer, reservedRoom, checkIn, checkOut);
+        Reservation r = hr.bookARoom(reservationCustomer.getEmail(), reservedRoom, checkIn, checkOut);
 
         System.out.println("");
         System.out.println("Thank you for your reservation");
@@ -277,6 +315,9 @@ public class MainMenu {
         System.out.println(r);
     }
 
+    /**
+     * View all the customer reservations for the given customer
+     */
     private void viewCustomerReservations(){
         //Now type in the account
         System.out.println("Type in your email address to see your reservations");
@@ -292,12 +333,12 @@ public class MainMenu {
                 if (customerEmail.toUpperCase(Locale.ROOT).equals("EXIT")){
                     return;
                 }
-                reservationCustomer = cs.getCustomer(customerEmail);
+                reservationCustomer = hr.getCustomer(customerEmail);
                 if (reservationCustomer == null){
                     throw new IllegalArgumentException("That customer email address is not in our records");
                 }
                 //get the customer Reservations
-                Collection<Reservation> customerReservations = rs.getCustomersReservation(reservationCustomer);
+                Collection<Reservation> customerReservations = hr.getCustomerReservations(reservationCustomer.getEmail());
                 //now print the reservations
                 if (customerReservations.size() == 0){
                     System.out.println("There are no reservations for this customer");
@@ -316,12 +357,23 @@ public class MainMenu {
         }
     };
 
+    /**
+     * Increment the supplied Date by 7 days
+     * @param dateToIncrement
+     * @return The dateToIncrement plus 7 days
+     */
     private static Date incrementDateBy7Days(Date dateToIncrement){
         Calendar date = Calendar.getInstance();
         date.setTime(dateToIncrement);
         date.add(Calendar.DATE, 7);
         return date.getTime();
     }
+
+    /**
+     * Format a Date to a string
+     * @param d
+     * @return
+     */
     private String dateToSrtring(Date d){
         String pattern = "MM/dd/yyyy";
         DateFormat df = new SimpleDateFormat(pattern);

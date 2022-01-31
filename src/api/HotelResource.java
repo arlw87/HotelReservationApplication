@@ -35,9 +35,16 @@ public class HotelResource {
         return cs.getCustomer(email);
     }
 
+    /**
+     * Creates a customer in the Hotel Reservation System, if the customer email already in use or invalid then
+     * throws an error (Check done in add Customer method called in this method)
+     * @param email
+     * @param firstName
+     * @param lastName
+     * @throws IllegalArgumentException if email already in use or invalid
+     */
     public void createACustomer(String email, String firstName, String lastName) throws IllegalArgumentException{
         //Validation of email is done at the model level for customer
-        //there is currently no validation of the names
         cs.addCustomer(email, firstName, lastName);
     }
 
