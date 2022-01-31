@@ -4,6 +4,7 @@ import service.CustomerService;
 import service.ReservationService;
 
 import java.sql.SQLOutput;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -138,10 +139,16 @@ public class MainMenu {
             try {
                 checkIn = formatter.parse(checkInString);
                 checkOut = formatter.parse(checkOutString);
+                //check if the dates are in the future and the check in is before check out
+                if (checkIn.compareTo(checkOut) > 0 || checkIn.compareTo(Calendar.getInstance().getTime()) < 0) {
+                    throw new RuntimeException("Check In date must be before check out and in the future");
+                }
                 enteringDates = false;
             } catch (ParseException ex) {
                 System.out.println("Error with date inputs");
                 System.out.println("Please try again");
+            } catch (RuntimeException re){
+                System.out.println("Check in Date must be before checkout date and must be in the future");
             }
         }
 
@@ -165,8 +172,9 @@ public class MainMenu {
             }
         }
 
-        //print the rooms
-        System.out.println("Here are the available rooms");
+        //print the rooms and Date Range
+
+        System.out.println("Here are the available rooms for the dates: " + dateToSrtring(checkIn) + " to " + dateToSrtring(checkOut));
         for (IRoom room : availableRooms){
             System.out.println(room);
         }
@@ -320,5 +328,10 @@ public class MainMenu {
         date.setTime(dateToIncrement);
         date.add(Calendar.DATE, 7);
         return date.getTime();
+    }
+    private String dateToSrtring(Date d){
+        String pattern = "MM/dd/yyyy";
+        DateFormat df = new SimpleDateFormat(pattern);
+        return df.format(d);
     }
 }
