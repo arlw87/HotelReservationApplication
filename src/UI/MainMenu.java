@@ -11,10 +11,14 @@ public class MainMenu {
     public MainMenu(){}
 
     public static void main(String[] args) {
+        boolean exit = false;
         MainMenu m = new MainMenu();
-        m.printMenu();
-        int selectedOption = m.getOption();
-        m.menuAction(selectedOption);
+        while (!exit){
+            m.printMenu();
+            int selectedOption = m.getOption();
+            exit = m.menuAction(selectedOption);
+        }
+
     }
 
     private void printMenu(){
@@ -49,24 +53,27 @@ public class MainMenu {
         return selectedOption;
     }
 
-    private void menuAction(int selection){
+    private boolean menuAction(int selection){
         switch(selection){
             case 1:
                 System.out.println("Finding and reserving a room");
-                break;
+                return false;
             case 2:
                 System.out.println("See all my reservations");
-                break;
+                return false;
             case 3:
                 System.out.println("Creating an account");
-                break;
+                return false;
             case 4:
                 System.out.println("Administration Menu");
                 openAdminMenu();
-                break;
+                return false;
             case 5:
                 System.out.println("Exit the program");
-                break;
+                return true;
+            default:
+                System.out.println("Default Option");
+                return false;
         }
     }
 
