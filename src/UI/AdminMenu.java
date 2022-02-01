@@ -153,6 +153,7 @@ public class AdminMenu {
 
                     isRoomNumberEntered = true;
                 } catch (IllegalArgumentException ex){
+                    System.out.println(ex.getLocalizedMessage());
                     System.out.println("Please enter a valid room number");
                 } catch (RuntimeException re){
                     System.out.println("Room already exists please add another");
@@ -164,8 +165,14 @@ public class AdminMenu {
                 try{
                     System.out.println("Enter room cost per night");
                     roomCost = Double.parseDouble(input.nextLine().trim());
+
+                    if (roomCost < 0){
+                        throw new IllegalArgumentException("Room cost must be 0 or greater");
+                    }
+
                     isRoomCostEntered = true;
                 } catch (IllegalArgumentException ex){
+                    System.out.println(ex.getLocalizedMessage());
                     System.out.println("Please enter a valid room cost");
                 }
             }

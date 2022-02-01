@@ -181,7 +181,7 @@ public class MainMenu {
         //if there are no rooms available then add 7 days to both the checkIn and checkOut
         //dates and search again
         if (availableRooms.size() == 0){
-            System.out.println("No rooms found for the date specified looking for rooms available 7 days after your" +
+            System.out.println("No rooms found for the date specified looking for rooms available 7 days after your " +
                     "specified start and end days...");
             //create a new search for rooms
             //Add to Date
@@ -289,7 +289,12 @@ public class MainMenu {
                 }
 
                 //if room isnt available then try again
-                throw new RuntimeException("Room is not available");
+                //then reservedRoom is null
+                //throw error and try again
+                if (reservedRoom == null){
+                    throw new RuntimeException("Room is not available");
+                }
+
 
             } catch (IllegalArgumentException ex){
                 System.out.println("Please enter a valid room number");
