@@ -104,7 +104,7 @@ public class ReservationService {
             INNER_LOOP: for (Reservation r: reservations){
                 //if room in reservation same as the current room in room list does the reserveration dates overlap
                 //the checkInDate and checkOutDate provided
-                if (r.getRoom().getRoomNumber().equals(room.getRoomNumber())){
+                if (r.getRoom().equals(room)){
                     if (doDateRangesOverlap(checkInDate, checkOutDate, r.getCheckIn(), r.getCheckOut())){
                         //if the reservation overlaps with requested dates
                         //then dont add room to available rooms as it is not available
