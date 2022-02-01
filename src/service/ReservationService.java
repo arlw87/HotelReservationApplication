@@ -13,8 +13,8 @@ public class ReservationService {
 
     private static ReservationService singleton = null;
 
-    private static Map<String, IRoom> rooms = new HashMap<>();
-    private static Collection<Reservation> reservations = new ArrayList<>();
+    final private Map<String, IRoom> rooms = new HashMap<>();
+    final private Collection<Reservation> reservations = new ArrayList<>();
 
     private ReservationService(){
     };

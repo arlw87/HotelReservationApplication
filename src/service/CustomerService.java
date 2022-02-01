@@ -14,7 +14,7 @@ public class CustomerService {
 
     private static CustomerService singleton = null;
 
-    private Collection<Customer> customers = new ArrayList<Customer>();
+    final private Collection<Customer> customers = new ArrayList<Customer>();
 
     private CustomerService(){
         System.out.println("The singleton has been created");

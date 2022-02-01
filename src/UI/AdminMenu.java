@@ -57,8 +57,7 @@ public class AdminMenu {
         System.out.println("2 - See All rooms");
         System.out.println("3 - See All Reservations");
         System.out.println("4 - Add a Room");
-        System.out.println("5 - Add Test Data");
-        System.out.println("6 - Back to Main Menu");
+        System.out.println("5 - Back to Main Menu");
         System.out.println("--------------------------------------------");
         System.out.println("Please select an option");
     }
@@ -108,9 +107,6 @@ public class AdminMenu {
                 addARoom();
                 return true;
             case 5:
-                System.out.println("Add Test Data");
-                return true;
-            case 6:
                 System.out.println("Back to Main Menu");
                 return false;
             default:

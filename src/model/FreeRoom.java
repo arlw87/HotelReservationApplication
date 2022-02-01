@@ -3,7 +3,7 @@ package model;
 /**
  * FreeRom is an extension of Room Class but the price is nothing
  */
-public class FreeRoom extends Room{
+public final class FreeRoom extends Room{
 
     public FreeRoom(String roomNumber, RoomType roomType){
         super(roomNumber, 0.0, roomType); //set the price to 0
@@ -21,3 +21,4 @@ public class FreeRoom extends Room{
                 '}';
     }
 }
+
