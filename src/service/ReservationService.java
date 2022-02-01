@@ -129,7 +129,7 @@ public class ReservationService {
      * @param rangeBEnd
      * @return True if they do overlap, false if they do not
      */
-    private boolean doDateRangesOverlap(Date rangeAStart, Date rangeAEnd, Date rangeBStart, Date rangeBEnd){
+    boolean doDateRangesOverlap(Date rangeAStart, Date rangeAEnd, Date rangeBStart, Date rangeBEnd){
         return (rangeAStart.getTime() <= rangeBEnd.getTime() && rangeAEnd.getTime() >= rangeBStart.getTime());
     }
 
