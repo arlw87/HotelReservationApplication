@@ -4,9 +4,9 @@ import java.util.Objects;
 
 public class Room implements IRoom{
 
-    private String roomNumber;
-    private Double price;
-    private RoomType roomType;
+    private final String roomNumber;
+    private final Double price;
+    private final RoomType roomType;
 
     public Room(String roomNumber, Double price, RoomType roomType){
         this.roomNumber = roomNumber;
